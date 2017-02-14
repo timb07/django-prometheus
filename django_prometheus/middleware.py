@@ -1,5 +1,12 @@
+from django.conf import settings
+
 from prometheus_client import Counter, Histogram
 from django_prometheus.utils import Time, TimeSince, PowersOf
+
+buckets = getattr(settings, 'PROMETHEUS_METRICS_BUCKETS', None)
+histogram_kwargs = {}
+if buckets:
+    histogram_kwargs['buckets'] = buckets
 
 requests_total = Counter(
     'django_http_requests_before_middlewares_total',
@@ -10,7 +17,7 @@ responses_total = Counter(
 requests_latency_before = Histogram(
     'django_http_requests_latency_including_middlewares_seconds',
     ('Histogram of requests processing time (including middleware '
-     'processing time).'))
+     'processing time).'), **histogram_kwargs)
 requests_unknown_latency_before = Counter(
     'django_http_requests_unknown_latency_including_middlewares_total',
     ('Count of requests for which the latency was unknown (when computing '
@@ -35,7 +42,7 @@ class PrometheusBeforeMiddleware(object):
 
 requests_latency = Histogram(
     'django_http_requests_latency_seconds',
-    'Histogram of requests processing time.')
+    'Histogram of requests processing time.', **histogram_kwargs)
 requests_unknown_latency = Counter(
     'django_http_requests_unknown_latency_total',
     'Count of requests for which the latency was unknown.')

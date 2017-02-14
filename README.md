@@ -117,6 +117,16 @@ collected by django-prometheus:
 
 ![Example dashboard](https://raw.githubusercontent.com/korfuri/django-prometheus/master/examples/django-promdash.png)
 
+### Configuring latency histogram buckets
+
+By default, request latency metrics use Prometheus histograms with the
+default prometheus_client buckets. Configure different buckets
+by adding the following line in your `settings.py`:
+
+```python
+PROMETHEUS_METRICS_BUCKETS = (0.1, 0.5, 1.0, 5.0, 10.0, 50.0)
+```
+
 ## Adding your own metrics
 
 You can add application-level metrics in your code by using
